@@ -17,197 +17,207 @@
 
 package ru.sbt.jschool.session2;
 
-import java.io.PrintStream;
-import java.text.DateFormat;
+
+import java.io.*;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Formatter;
-import java.util.Locale;
+
 
 /**
  */
 public class OutputFormatter {
     private PrintStream out;
 
+    public static void main(String[] args) throws ParseException, IOException { }
 
-
-    public static void main(String[] args) {
-
-        DecimalFormat dc = new DecimalFormat("###,###");
-        System.out.println(dc.format(1872658021));
-
-
-        int[][] data = new int[13][5];
-        for (int i = 0; i < 13 ; i++) {
-            for (int j = 0; j <5 ; j++) {
-                System.out.print(data[i][j]+" ");
-            }
-            System.out.println();
-        }
-        System.out.println(data.length);
-
-        Object obj = .12;
-        double d = (double) obj;
-        System.out.println(d);
-        Date date = new Date();
-        System.out.println(date);
-        System.out.println();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-
-        Date date1 = new Date(14-1900,0,1);
-
-        String l = "1234";
-
-
-
-
-        System.out.println(sdf.format(date1));
-
-
-
-
-//        double d = Double.parseDouble(".1245");
-//        System.out.println(d);
-//        System.out.printf("%,5.2f",d);
-
-        int reg = 30;
-
-
-        //formatter.format("%,7.2f", 212334909.5544);
-        System.out.println("Amayak");
-        System.out.format("%,"+reg+".2f", 56283750.123);
-        System.out.println();
-        System.out.printf("%,"+reg+"d", 192875769);
-
-        Locale.setDefault(new Locale("fr", "FR"));
-        Locale.setDefault(Locale.FRENCH);
-        Locale.setDefault(new Locale("ru","RUSSIA"));
-
-        System.out.println();
-        System.out.printf("%,"+reg+".2f", 56283750.123);
-    }
 
     public OutputFormatter(PrintStream out) {
         this.out = out;
     }
 
-    private String GridLine(String[] names, Object[][] data)
+
+    private String[] ComputeGridLines(String[] names, Object[][] data)
     {
-       int[] countOfTraitInLine = new int[names.length];
+       int[] countOfTraitInLines = new int[names.length];
+       String[] gridLines = new String[names.length];
 
         for (int i = 0; i < names.length; i++) {
 
-            Object obj = data[0][i];
+            int k = 0;
             int max = names[i].length();
 
-            if (obj instanceof Double) {
+            if (data.length != 0) {
 
-                DecimalFormat dc = new DecimalFormat("###,##0.00");
+                if (data[0][i] == null) {
+                    for (int j = 0; j < data.length; j++) {
+                        if (data[j][i] != null) {
+                            break;
+                        }
+                        k++;
+                    }
 
-                for (int j = 0; j < data.length; j++) {
-                    if (data[j][i]!=null) {
-                        double dObj = (double) data[j][i];
-                        int lengthOfNumber = dc.format(dObj).length();
-                        if (lengthOfNumber > max) max = lengthOfNumber;
+                }
+                if (k == data.length) {
+                    countOfTraitInLines[i] = max;
+                    continue;
+                }
+
+                Object obj = data[k][i];
+
+
+                if (obj instanceof Double) {
+
+                    DecimalFormat dc = new DecimalFormat("###,##0.00");
+
+                    for (int j = 0; j < data.length; j++) {
+                        if (data[j][i] != null) {
+                            double dObj = (double) data[j][i];
+                            int lengthOfNumber = dc.format(dObj).length();
+                            if (lengthOfNumber > max) max = lengthOfNumber;
+                        }
                     }
                 }
-            }
-            if (obj instanceof Integer) {
+                if (obj instanceof Integer) {
 
-                DecimalFormat dc = new DecimalFormat("###,###");
+                    DecimalFormat dc = new DecimalFormat("###,###");
 
-                for (int j = 0; j < data.length; j++) {
-                    if (data[j][i]!=null) {
-                        int iObj = (int) data[j][i];
-                        int lengthOfNumber = dc.format(iObj).length();
-                        if (lengthOfNumber > max) max = lengthOfNumber;
+                    for (int j = 0; j < data.length; j++) {
+                        if (data[j][i] != null) {
+                            int iObj = (int) data[j][i];
+                            int lengthOfNumber = dc.format(iObj).length();
+                            if (lengthOfNumber > max) max = lengthOfNumber;
+                        }
                     }
                 }
-            }
-            if (obj instanceof Date) {
+                if (obj instanceof Date) {
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
-                for (int j = 0; j < data.length; j++) {
-                    if (data[j][i] != null) {
-                        Date dateObj = (Date) data[j][i];
-                    int lengthOfNumber = sdf.format(dateObj).length();
-                    if (lengthOfNumber > max) max = lengthOfNumber;
-                }
-                }
-            }
-            if (obj instanceof String) {
-
-                for (int j = 0; j < data.length; j++) {
-                    if (data[j][i]!=null&&data[i][j]!="") {
-                        String sObj = (String) data[j][i];
-                        int lengthOfLine = sObj.length();
-                        if (lengthOfLine > max) max = lengthOfLine;
+                    for (int j = 0; j < data.length; j++) {
+                        if (data[j][i] != null) {
+                            Date dateObj = (Date) data[j][i];
+                            int lengthOfNumber = sdf.format(dateObj).length();
+                            if (lengthOfNumber > max) max = lengthOfNumber;
+                        }
                     }
                 }
+                if (obj instanceof String || obj == "") {
+
+                    for (int j = 0; j < data.length; j++) {
+                        if (data[j][i] != null && data[j][i] != "") {
+                            String sObj = (String) data[j][i];
+                            int lengthOfLine = sObj.length();
+                            if (lengthOfLine > max) max = lengthOfLine;
+                        }
+                    }
+                }
+
             }
-
-
-            countOfTraitInLine[i] = max;
-        }
+                countOfTraitInLines[i] = max;
+            }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("+");
-        for (int i = 0; i < countOfTraitInLine.length; i++) {
-            for (int j = 0; j < countOfTraitInLine[i]; j++) {
+
+        for (int i = 0; i < countOfTraitInLines.length; i++) {
+            for (int j = 0; j < countOfTraitInLines[i]; j++) {
                 sb.append("-");
             }
-            sb.append("+");
+            gridLines[i] = sb.toString();
+            sb.delete(0, sb.length());
         }
 
-        return sb.toString();
+        return gridLines;
     }
 
-    private void drawToGrid(String gridLine)
+    private void drawToGrid(String[] gridLines, String[] names, Object[][] data)
     {
+        DecimalFormat dfDouble = new DecimalFormat("###,##0.00");
+        DecimalFormat dfInt = new DecimalFormat("###,###");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
+        //Вычисляю отступ для центрирования заголовков таблицы.
+        int[] indentForTitles = new int[names.length];
+        for (int i = 0; i < names.length ; i++) {
+            indentForTitles[i] = (gridLines[i].length() - names[i].length())/2;
+        }
+
+        //Получаю формат горизонтальной линии таблицы.
+        String gridLine = "";
+        for (int i = 0; i < gridLines.length ; i++) {
+
+            gridLine+="+";
+            gridLine+=gridLines[i];
+        }
+        gridLine+="+";
+
+        //Рисую заголовок таблицы.
+        out.println(gridLine);
+        for (int i = 0; i < names.length; i++) {
+            out.print("|");
+            for (int j = 0; j < indentForTitles[i]; j++)
+            {
+               out.print(" ");
+            }
+            int countSymbol = gridLines[i].length() - indentForTitles[i];
+            out.printf("%-"+countSymbol+"s",names[i]);
+        }
+        out.println("|");
+        out.println(gridLine);
+
+        //Рисую остальную таблицу с данными:
+        for (int i = 0; i < data.length ; i++) {
+
+            for (int j = 0; j < names.length ; j++) {
+                out.print("|");
+                int lengthOfLine = gridLines[j].length();
+
+                    Object obj = data[i][j];
+
+                    if (obj==null)
+                    {
+                        for (int k = 0; k < data.length ; k++) {
+                            if (data[k][j]!=null)
+                            {
+                                if (data[k][j] instanceof Double)
+                                {out.printf("%"+lengthOfLine+"s", "-"); break;}
+                                if (data[k][j] instanceof Integer)
+                                {out.printf("%"+lengthOfLine+"s", "-"); break;}
+                                if (data[k][j] instanceof Date)
+                                {out.printf("%"+lengthOfLine+"s", "-"); break;}
+                                if (data[k][j] instanceof String)
+                                {out.printf("%-"+lengthOfLine+"s", "-"); break;}
+                            }
+                        }
+                    }
+
+                if (obj instanceof Double) {
+                    double dObj = (double) obj;
+                    out.printf("%"+lengthOfLine+"s", dfDouble.format(dObj));
+                }
+                if (obj instanceof Integer) {
+                    int iObj = (int) obj;
+                    out.printf("%"+lengthOfLine+"s", dfInt.format(iObj));
+                }
+                if (obj instanceof Date) {
+                    Date dateObj = (Date) obj;
+                    out.printf("%"+lengthOfLine+"s", sdf.format(dateObj));
+                }
+                if (obj instanceof String) {
+                    String stringObj = (String) obj;
+                    out.printf("%-"+lengthOfLine+"s", stringObj);
+                }
+
+            }
+            out.println("|");
+            out.println(gridLine);
+        }
     }
-
-
-    private String renderingOfStringData(Object obj)
-    {
-        String sObj = (String) obj;
-
-        return null;
-    }
-
-
-    private String renderingOfNumberData(Object obj)
-    {
-        int iObj = (int) obj;
-
-        return null;
-    }
-
-    private String renderingOfDoubleData(Object obj)
-    {
-        double dObj = (double) obj;
-
-        return null;
-
-    }
-
-    private String renderingOfDateData(Object obj)
-    {
-        Date value = (Date) obj;
-
-        return null;
-    }
-
 
     public void output(String[] names, Object[][] data) {
         //TODO: implement me.
-
-        String gridLine = GridLine(names,data);
-
-
-
-
+        String[] gridLines = ComputeGridLines(names,data);
+        drawToGrid(gridLines, names, data);
     }
 }
